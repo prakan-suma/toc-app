@@ -7,12 +7,14 @@ This project consists of a FastAPI backend and a React frontend.
 ### Backend (FastAPI)
 
 1. Navigate to the backend directory: 
-``` cd toc-app/backend ```
+```
+cd toc-app/backend
+```
 
-2. Create a virtual environment: 
+3. Create a virtual environment: 
 ```python -m venv venv```
 
-3. Activate the virtual environment:
+4. Activate the virtual environment:
 - On Windows:
   ```
   venv\Scripts\activate
