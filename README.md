@@ -2,10 +2,6 @@
 
 This project consists of a FastAPI backend and a React frontend.
 
-## Project Structure
-toc-app/
-├── backend/    # FastAPI application
-└── frontend/   # React application
 ## Setup
 
 ### Backend (FastAPI)
@@ -24,7 +20,10 @@ toc-app/
   source venv/bin/activate
   ```
 
-4. Install dependencies: pip install -r requirements.txt
+4. Install dependencies: 
+```
+pip install -r requirements.txt
+```
 
 5. Run the FastAPI server: uvicorn main:app --reload
 
