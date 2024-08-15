@@ -12,9 +12,11 @@ cd toc-app/backend
 ```
 
 3. Create a virtual environment: 
-```python -m venv venv```
+```
+python -m venv venv
+```
 
-4. Activate the virtual environment:
+5. Activate the virtual environment:
 - On Windows:
   ```
   venv\Scripts\activate
@@ -30,19 +32,27 @@ pip install -r requirements.txt
 ```
 
 5. Run the FastAPI server: 
-```uvicorn main:app --reload```
+```
+uvicorn main:app --reload
+```
 
 The API will be available at `http://localhost:8000`.
 
 ### Frontend (React)
 
 1. Navigate to the frontend directory: 
-```cd toc-app/frontend```
+```
+cd toc-app/frontend
+```
 
-2. Install dependencies: 
-```npm install```
+3. Install dependencies: 
+```
+npm install
+```
 
-3. Start the development server:
-``` npm start```
+5. Start the development server:
+```
+npm run dev
+```
 
 The React app will be available at `http://localhost:5174`.
