@@ -9,7 +9,6 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await fetch("http://127.0.0.1:8000/");
-        console.log(response.ok);
         const result = await response.json();
         setRes(result);
       } catch (error) {
