@@ -8,7 +8,8 @@ app.add_middleware(
     CORSMiddleware,
     # Port of React (Vite) // dev port
     allow_origins=["http://localhost:5173"],
-    # allow_origins=["http://toc-app-render"],  # Port of React (Vite) // Product port
+    # Port of React (Vite) // Product port
+    allow_origins=["https://toc-app-fe.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
