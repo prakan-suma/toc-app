@@ -2,7 +2,7 @@
 
 This project consists of a FastAPI backend and a React frontend.
 
-## Preview Web 🎉
+## Web Preview  🎉
 - https://toc-app-fe.onrender.com
 
 ## Setup
