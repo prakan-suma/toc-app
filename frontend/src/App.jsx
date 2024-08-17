@@ -53,7 +53,10 @@ function App() {
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
           </>
         ) : (
-          <p>Loading...</p>
+          <>
+          <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">Loading...</h1>
+          <p>Please wait, the backend is starting itself automatically.</p>
+          </>
         )}
       </section>
     </div>
