@@ -33,7 +33,7 @@ function App() {
           <h1 className="text-3xl font-bold">+</h1>
           <img
             className="w-24 mx-6 tailwind-icon"
-            src="https://static-00.iconduck.com/assets.00/tailwind-css-icon-2048x1229-u8dzt4uh.png"
+            src="https://img.icons8.com/fluent/200/tailwind_css.png"
             alt="react"
           />
         </div>
