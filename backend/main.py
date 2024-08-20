@@ -9,7 +9,7 @@ app.add_middleware(
     # Port of React (Vite) // dev port
     # allow_origins=["http://localhost:5173"],
     # Port of React (Vite) // Product port
-    allow_origins=["https://toc-app-fe.onrender.com"],
+    allow_origins=["https://toc-app-fe.onrender.com", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
