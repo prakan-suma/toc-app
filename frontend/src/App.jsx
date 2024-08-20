@@ -32,6 +32,7 @@ function App() {
         const result = await response.json();
 
         setCartoons(result);
+
         console.log(result);
       } catch (error) {
         console.log(error);
