@@ -9,8 +9,8 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/");
-        // const response = await fetch("https://toc-app-be.onrender.com");
+        // const response = await fetch("http://127.0.0.1:8000/");
+        const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -21,8 +21,8 @@ function App() {
 
     const fetchCartoons = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/cartoons");
-        // const response = await fetch("https://toc-app-be.onrender.com");
+        // const response = await fetch("http://127.0.0.1:8000/cartoons");
+        const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         console.log(result);
         setCartoons(result);
@@ -36,7 +36,7 @@ function App() {
   }, []);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-neutral-900 ">
+    <div className="min-h-screen  flex items-center justify-center bg-neutral-900 ">
       <section className="text-center">
         <div className="flex justify-center items-center my-6">
           <img
@@ -68,10 +68,23 @@ function App() {
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
 
             {/* cartoon display  */}
-            <section className="container mx-auto">
-              <div className="card">
+            <section className="my-12 mx-auto">
+              <div className="flex gap-3 card">
                 {cartoons.map((cartoon) => (
-                  <img className="w-32" src={cartoon.image_url} alt="" />
+                  <div className=" backdrop-blur-md bg-white/10 rounded-md">
+                    <img
+                      className="h-72 w-46 object-cover  rounded-md"
+                      src={cartoon.image_url}
+                      alt=""
+                    />
+                    <h3 className="text-xl py-3">{cartoon.name}</h3>
+                    <p className="text-yellow-300">⭐{cartoon.rate}</p>
+                    <p className="py-3">
+                      <span className="bg-sky-600 px-2 rounded-full">
+                        {cartoon.category}
+                      </span>
+                    </p>
+                  </div>
                 ))}
               </div>
             </section>
