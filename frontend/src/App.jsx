@@ -3,13 +3,14 @@ import "./App.css";
 
 function App() {
   const [res, setRes] = useState("");
+  const [cartoons, setCartoons] = useState([]);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await fetch("http://127.0.0.1:8000/");
-        const response = await fetch("https://toc-app-be.onrender.com");
+        const response = await fetch("http://127.0.0.1:8000/");
+        // const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -18,7 +19,20 @@ function App() {
       }
     };
 
+    const fetchCartoons = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/cartoons");
+        // const response = await fetch("https://toc-app-be.onrender.com");
+        const result = await response.json();
+        console.log(result);
+        setCartoons(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchData();
+    fetchCartoons();
   }, []);
 
   return (
@@ -38,6 +52,7 @@ function App() {
           />
         </div>
         <h1 className="text-lg my-">Power by React & Tailwind</h1>
+
         {error ? (
           <>
             <p className="text-3xl font-bold text-red-500 my-6">
@@ -51,11 +66,22 @@ function App() {
               {res.message}
             </h1>
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
+
+            {/* cartoon display  */}
+            <section className="container mx-auto">
+              <div className="card">
+                {cartoons.map((cartoon) => (
+                  <img className="w-32" src={cartoon.image_url} alt="" />
+                ))}
+              </div>
+            </section>
           </>
         ) : (
           <>
-          <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">Loading...</h1>
-          <p>Please wait, the backend is starting itself automatically.</p>
+            <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">
+              Loading...
+            </h1>
+            <p>Please wait, the backend is starting itself automatically.</p>
           </>
         )}
       </section>
