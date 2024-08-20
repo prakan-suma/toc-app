@@ -22,12 +22,17 @@ function App() {
     const fetchCartoons = async () => {
       try {
         // const response = await fetch("http://127.0.0.1:8000/cartoons");
+        console.log("awit fetch");
         const response = await fetch(
-          "https://toc-app-be.onrender.com/cartoons"
+          "https://toc-app-be.onrender.com/scrape"
         );
+        
+        console.log(response);
+        
         const result = await response.json();
-        console.log(result);
+
         setCartoons(result);
+        console.log(result);
       } catch (error) {
         console.log(error);
       }
