@@ -21,20 +21,23 @@ function App() {
     };
 
     const fetchCartoons = async () => {
+      
       try {
+      
         const cachedData = localStorage.getItem("cartoons");
         const cachedTime = localStorage.getItem("cartoonsTimestamp");
-
+        console.log(response)
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
         } else {
           const response = await fetch(
-            "https://toc-app-be.onrender.com/scrape"
+            "http://localhost:8000/scrape"
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
           const result = await response.json();
+          console.log(result)
           setCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
           localStorage.setItem("cartoonsTimestamp", Date.now()); // เก็บเวลาปัจจุบัน
@@ -47,6 +50,26 @@ function App() {
     fetchData();
     fetchCartoons();
   }, []);
+
+  const downloadCSV = async ()=>{
+    try {
+      const response = await fetch('http://localhost:8000/download-csv');
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'manga_list.csv';  // The name of the file when it's downloaded
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+  } catch (error) {
+      console.error('Failed to download CSV:', error);
+  }
+}
 
   return (
     <div className="min-h-screen  flex items-center justify-center bg-neutral-900 ">
@@ -65,6 +88,7 @@ function App() {
           />
         </div>
         <h1 className="text-lg my-">Power by React & Tailwind</h1>
+        <button onClick={downloadCSV} className="bg-green-400 hover:bg-green-500">export</button>
 
         {error ? (
           <>
