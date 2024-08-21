@@ -31,7 +31,7 @@ function App() {
           setCartoons(JSON.parse(cachedData));
         } else {
           const response = await fetch(
-            "http://localhost:8000/scrape"
+            "https://toc-app-be.onrender.com/scrape"
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -53,7 +53,7 @@ function App() {
 
   const downloadCSV = async ()=>{
     try {
-      const response = await fetch('http://localhost:8000/download-csv');
+      const response = await fetch('https://toc-app-be.onrender.com/download-csv');
       if (!response.ok) {
           throw new Error('Network response was not ok');
       }
