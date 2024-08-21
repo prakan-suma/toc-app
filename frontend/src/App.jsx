@@ -6,6 +6,8 @@ function App() {
   const [cartoons, setCartoons] = useState([]);
   const [error, setError] = useState(false);
 
+  const CACHE_TIME = 1000 * 60 * 60; // 1 ชั่วโมง
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -20,9 +22,11 @@ function App() {
 
     const fetchCartoons = async () => {
       try {
-        const cachedData = localStorage.getItem("cartoons"); // เปลี่ยนเป็น 'cartoons'
-        if (cachedData) {
-          setCartoons(JSON.parse(cachedData)); // เปลี่ยนเป็น JSON.parse
+        const cachedData = localStorage.getItem("cartoons");
+        const cachedTime = localStorage.getItem("cartoonsTimestamp");
+
+        if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
+          setCartoons(JSON.parse(cachedData));
         } else {
           const response = await fetch(
             "https://toc-app-be.onrender.com/scrape"
@@ -32,8 +36,8 @@ function App() {
           }
           const result = await response.json();
           setCartoons(result);
-          localStorage.setItem("cartoons", JSON.stringify(result)); // เปลี่ยนเป็น 'cartoons'
-          console.log(result);
+          localStorage.setItem("cartoons", JSON.stringify(result));
+          localStorage.setItem("cartoonsTimestamp", Date.now()); // เก็บเวลาปัจจุบัน
         }
       } catch (error) {
         console.log(error);
@@ -77,7 +81,7 @@ function App() {
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
 
             {/* cartoon display  */}
-            {cartoons && cartoons.length >= 1 && (
+            {cartoons && cartoons.length >= 1 ? (
               <section className="w-1/2 my-12 mx-auto">
                 <div className="grid grid-cols-4 gap-4 card">
                   {cartoons.map((cartoon, index) => (
@@ -103,6 +107,14 @@ function App() {
                   ))}
                 </div>
               </section>
+            ) : (
+              <>
+                <div className="mt-24">
+                  <div className="loader center mx-auto my-5 text-yellow-300"></div>
+                  <p className="text-lg font-medium">กำลัง Scraping</p>
+                  <p className="text-slate-400">ใช้เวลา ประมาณ 3-5 นาที</p>
+                </div>
+              </>
             )}
           </>
         ) : (
