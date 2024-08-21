@@ -11,6 +11,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // const response = await fetch("http://localhost:8000/");
         const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
@@ -21,18 +22,15 @@ function App() {
     };
 
     const fetchCartoons = async () => {
-      
       try {
-      
         const cachedData = localStorage.getItem("cartoons");
         const cachedTime = localStorage.getItem("cartoonsTimestamp");
-        console.log(response)
+
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
         } else {
-          const response = await fetch(
-            "https://toc-app-be.onrender.com/scrape"
-          );
+          const response = await fetch("https://toc-app-be.onrender.com/scrape");
+          // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -53,6 +51,7 @@ function App() {
 
   const downloadCSV = async ()=>{
     try {
+      // const response = await fetch('http://localhost:8000/download-csv');
       const response = await fetch('https://toc-app-be.onrender.com/download-csv');
       if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -88,7 +87,7 @@ function App() {
           />
         </div>
         <h1 className="text-lg my-">Power by React & Tailwind</h1>
-        <button onClick={downloadCSV} className="bg-green-400 hover:bg-green-500">export</button>
+       
 
         {error ? (
           <>
@@ -104,6 +103,7 @@ function App() {
             </h1>
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
 
+            <button onClick={downloadCSV} className="my-6 rounded-full px-3 bg-green-600 hover:bg-green-500 ">Export CSV</button>
             {/* cartoon display  */}
             {cartoons && cartoons.length >= 1 ? (
               <section className="w-1/2 my-12 mx-auto">

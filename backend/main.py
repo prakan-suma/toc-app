@@ -1,12 +1,12 @@
 import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 import aiohttp
 from bs4 import BeautifulSoup
 import re
 import csv
-import os
+import io
 
 app = FastAPI()
 
@@ -18,6 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+scraped_manga_list = None
 
 class Scraping:
     def __init__(self):
@@ -57,6 +58,7 @@ class Scraping:
         return [{'name': data[i][1], 'link': [data[i][0]]} for i in range(st, en + 1)]
 
     async def scrape_manga(self):
+        global scraped_manga_list
         async with aiohttp.ClientSession() as session:
             root_html = await self.fetch(session, 'https://one-manga.com/manga/')
             if not root_html:
@@ -101,6 +103,8 @@ class Scraping:
             if not manga_list:
                 raise HTTPException(status_code=404, detail="No data found")
 
+            scraped_manga_list = manga_list
+
             return manga_list
 
 
@@ -108,22 +112,27 @@ class Scraping:
 async def scrape_manga():
     bs = Scraping()
     manga_list = await bs.scrape_manga()
-    with open('manga_list.csv', mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Name'])  # Header
-        for manga in manga_list:
-            writer.writerow([manga['name']])
-            
     return manga_list
 
 
 @app.get("/download-csv")
 async def download_csv():
-    csv_filename = 'manga_list.csv'
-    if os.path.exists(csv_filename):
-        return FileResponse(csv_filename, media_type='text/csv', filename=csv_filename)
-    else:
-        raise HTTPException(status_code=404, detail="CSV file not found")
+    global scraped_manga_list
+    if not scraped_manga_list:
+        raise HTTPException(status_code=404, detail="No data available. Please scrape first.")
+    
+    # Create an in-memory file object
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Name'])  # Header
+    for manga in scraped_manga_list:
+        writer.writerow([manga['name']])
+    
+    output.seek(0)  # Reset the pointer to the start of the stream
+    return StreamingResponse(output, media_type='text/csv', headers={
+        "Content-Disposition": "attachment; filename=manga_list.csv"
+    })
+
 
 @app.get("/")
 def read_root():
