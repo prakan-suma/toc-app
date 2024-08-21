@@ -1,9 +1,12 @@
 import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import aiohttp
 from bs4 import BeautifulSoup
 import re
+import csv
+import os
 
 app = FastAPI()
 
@@ -104,8 +107,23 @@ class Scraping:
 @app.get("/scrape")
 async def scrape_manga():
     bs = Scraping()
-    return await bs.scrape_manga()
+    manga_list = await bs.scrape_manga()
+    with open('manga_list.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Name'])  # Header
+        for manga in manga_list:
+            writer.writerow([manga['name']])
+            
+    return manga_list
 
+
+@app.get("/download-csv")
+async def download_csv():
+    csv_filename = 'manga_list.csv'
+    if os.path.exists(csv_filename):
+        return FileResponse(csv_filename, media_type='text/csv', filename=csv_filename)
+    else:
+        raise HTTPException(status_code=404, detail="CSV file not found")
 
 @app.get("/")
 def read_root():
