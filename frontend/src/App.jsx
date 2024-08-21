@@ -9,7 +9,6 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await fetch("http://127.0.0.1:8000/");
         const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
@@ -21,19 +20,21 @@ function App() {
 
     const fetchCartoons = async () => {
       try {
-        // const response = await fetch("http://127.0.0.1:8000/cartoons");
-        console.log("awit fetch");
-        const response = await fetch(
-          "https://toc-app-be.onrender.com/scrape"
-        );
-        
-        console.log(response);
-        
-        const result = await response.json();
-
-        setCartoons(result);
-
-        console.log(result);
+        const cachedData = localStorage.getItem("cartoons"); // เปลี่ยนเป็น 'cartoons'
+        if (cachedData) {
+          setCartoons(JSON.parse(cachedData)); // เปลี่ยนเป็น JSON.parse
+        } else {
+          const response = await fetch(
+            "https://toc-app-be.onrender.com/scrape"
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const result = await response.json();
+          setCartoons(result);
+          localStorage.setItem("cartoons", JSON.stringify(result)); // เปลี่ยนเป็น 'cartoons'
+          console.log(result);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -77,22 +78,27 @@ function App() {
 
             {/* cartoon display  */}
             {cartoons && cartoons.length >= 1 && (
-              <section className="my-12 mx-auto">
-                <div className="flex gap-3 card">
-                  {cartoons.map((cartoon) => (
-                    <div className=" backdrop-blur-md bg-white/10 rounded-md">
+              <section className="w-1/2 my-12 mx-auto">
+                <div className="grid grid-cols-4 gap-4 card">
+                  {cartoons.map((cartoon, index) => (
+                    <div
+                      key={index} // เพิ่ม key
+                      className="flex flex-col backdrop-blur-md bg-white/10 rounded-md"
+                    >
                       <img
-                        className="h-72 w-46 object-cover  rounded-md"
+                        className="w-full h-72  object-cover rounded-md "
                         src={cartoon.image_url}
                         alt=""
                       />
                       <h3 className="text-xl py-3">{cartoon.name}</h3>
-                      <p className="text-yellow-300">⭐{cartoon.rate}</p>
-                      <p className="py-3">
-                        <span className="bg-sky-600 px-2 rounded-full">
-                          {cartoon.category}
-                        </span>
-                      </p>
+                      <div className="bottom mt-auto">
+                        <p className="text-yellow-300">⭐{cartoon.rate}</p>
+                        <p className="py-3">
+                          <span className="bg-sky-600 px-2 rounded-full">
+                            {cartoon.category}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
