@@ -85,7 +85,7 @@ class Scraping:
             genre_class = self.soup.find_all(class_=re.compile("section"))
             genre_url = self.extract_with_regex(
                 self.genre_url_pattern, genre_class)
-            genre_url_filter = self.filter_data(genre_url, 0, 70)
+            genre_url_filter = self.filter_data(genre_url, 1, 25)
 
             logger.info(f"Found {len(genre_url_filter)} genres to scrape")
 
