@@ -29,13 +29,15 @@ function App() {
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
         } else {
-          const response = await fetch("https://toc-app-be.onrender.com/scrape");
+          const response = await fetch(
+            "https://toc-app-be.onrender.com/scrape"
+          );
           // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
           const result = await response.json();
-          console.log(result)
+          console.log(result);
           setCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
           localStorage.setItem("cartoonsTimestamp", Date.now()); // เก็บเวลาปัจจุบัน
@@ -49,26 +51,28 @@ function App() {
     fetchCartoons();
   }, []);
 
-  const downloadCSV = async ()=>{
+  const downloadCSV = async () => {
     try {
       // const response = await fetch('http://localhost:8000/download-csv');
-      const response = await fetch('https://toc-app-be.onrender.com/download-csv');
+      const response = await fetch(
+        "https://toc-app-be.onrender.com/download-csv"
+      );
       if (!response.ok) {
-          throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
-      a.download = 'manga_list.csv';  // The name of the file when it's downloaded
+      a.download = "manga_list.csv"; // The name of the file when it's downloaded
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-  } catch (error) {
-      console.error('Failed to download CSV:', error);
-  }
-}
+    } catch (error) {
+      console.error("Failed to download CSV:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen  flex items-center justify-center bg-neutral-900 ">
@@ -87,7 +91,6 @@ function App() {
           />
         </div>
         <h1 className="text-lg my-">Power by React & Tailwind</h1>
-       
 
         {error ? (
           <>
@@ -103,10 +106,15 @@ function App() {
             </h1>
             <p>"Response form Backend fastAPI╰(*°▽°*)╯"</p>
 
-            <button onClick={downloadCSV} className="my-6 rounded-full px-3 bg-green-600 hover:bg-green-500 ">Export CSV</button>
+            <button
+              onClick={downloadCSV}
+              className="my-6 rounded-full px-3 bg-green-600 hover:bg-green-500 "
+            >
+              Export CSV
+            </button>
             {/* cartoon display  */}
             {cartoons && cartoons.length >= 1 ? (
-              <section className="w-1/2 my-12 mx-auto">
+              <section className="container max-w-7xl my-12 mx-auto">
                 <div className="grid grid-cols-4 gap-4 card">
                   {cartoons.map((cartoon, index) => (
                     <div
