@@ -1,7 +1,10 @@
 import asyncio
+import csv
+import io
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import aiohttp
 from bs4 import BeautifulSoup
 import re
@@ -9,7 +12,7 @@ import re
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+scraped_manga_list = None
 app = FastAPI()
 
 app.add_middleware(
@@ -75,6 +78,7 @@ class Scraping:
 
     async def scrape_manga(self):
         async with aiohttp.ClientSession() as session:
+            global scraped_manga_list
             root_html = await self.fetch(session, 'https://one-manga.com/manga/')
             if not root_html:
                 logger.error("Failed to fetch the root page")
@@ -133,6 +137,9 @@ class Scraping:
 
             logger.info("Scraping completed. Total mangas scraped: ", {
                         len(manga_list)})
+
+            scraped_manga_list = manga_list
+
             return manga_list
 
 
@@ -141,6 +148,26 @@ async def scrape_manga():
     logger.info("Scrape manga endpoint called")
     bs = Scraping()
     return await bs.scrape_manga()
+
+
+@app.get("/download-csv")
+async def download_csv():
+    global scraped_manga_list
+    if not scraped_manga_list:
+        raise HTTPException(
+            status_code=404, detail="No data available. Please scrape first.")
+
+    # Create an in-memory file object
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Name'])  # Header
+    for manga in scraped_manga_list:
+        writer.writerow([manga['name']])
+
+    output.seek(0)  # Reset the pointer to the start of the stream
+    return StreamingResponse(output, media_type='text/csv', headers={
+        "Content-Disposition": "attachment; filename=manga_list.csv"
+    })
 
 
 @app.get("/")
