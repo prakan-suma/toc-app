@@ -45,14 +45,12 @@ class Scraping:
         try:
             async with session.get(url) as response:
                 if response.status != 200:
-                    logger.error(f"Failed to fetch URL: {
-                                 url}, Status code: {response.status}")
-                    return None
+                    logger.error(f"Failed to fetch URL: {url}, Status code: {response.status}")
+                return None
                 logger.info(f"Successfully fetched URL: {url}")
                 return await response.text()
         except Exception as e:
-            logger.exception(f"Exception occurred while fetching URL: {
-                             url} - {str(e)}")
+            logger.exception(f"Exception occurred while fetching URL: {url} - {str(e)}")
             return None
 
     async def fetch_page(self, session, url):
@@ -131,8 +129,7 @@ class Scraping:
                 logger.warning("No data found after filtering")
                 raise HTTPException(status_code=404, detail="No data found")
 
-            logger.info(f"Scraping completed. Total mangas scraped: {
-                        len(manga_list)}")
+            logger.info(f"Scraping completed. Total mangas scraped: {len(manga_list)}")
             return manga_list
 
 
