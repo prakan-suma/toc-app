@@ -114,7 +114,7 @@ function App() {
             </button>
             {/* cartoon display  */}
             {cartoons && cartoons.length >= 1 ? (
-              <section className="container max-w-7xl my-12 mx-auto">
+              <section className="container max-w-5xl my-12 mx-auto">
                 <div className="grid grid-cols-4 gap-4 card">
                   {cartoons.map((cartoon, index) => (
                     <div
