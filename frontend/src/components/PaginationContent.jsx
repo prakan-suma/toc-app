@@ -1,16 +1,9 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-const PaginationContent = () => {
+const PaginationContent = ({data}) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [recordPage, setRecordPage] = useState(5);
-
-  const data = [
-    "Record 1", "Record 2", "Record 3", "Record 4", "Record 5",
-    "Record 6", "Record 7", "Record 8", "Record 9", "Record 10",
-    "Record 11", "Record 12", "Record 13", "Record 14", "Record 15"
-  ];
-
-  // const recordPage = 5;
 
   const totalPage = Math.ceil(data.length / recordPage);
 
@@ -34,11 +27,11 @@ const PaginationContent = () => {
 
   return (
     <div className="flex justify-between mt-2 px-2 items-center gap-4">
-      {/* <ul className="text-black">
+      <ul className="text-black">
         {currentData.map((record, index) => (
             <li className="text-black" key={index}>{record}</li>
         ))}
-      </ul> */}
+      </ul>
       <div>
         <select className="bg-[#cac4d0] rounded-md p-1" onChange={handleRecordChange} value={recordPage}>
           <option value={5} selected>5</option>
@@ -60,6 +53,10 @@ const PaginationContent = () => {
       </div>
     </div>
   );
+};
+
+PaginationContent.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default PaginationContent;
