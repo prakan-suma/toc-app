@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
     const fetchData = async () => {
       try {
         // const response = await fetch("http://localhost:8000/");
-        const response = await fetch("https://toc-app-be.onrender.com");
+        const response = await fetch("https://toc-app-product.onrender.com");
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -30,7 +30,7 @@ function App() {
           setCartoons(JSON.parse(cachedData));
         } else {
           const response = await fetch(
-            "https://toc-app-be.onrender.com/scrape"
+            "https://toc-app-product.onrender.com/scrape"
           );
           // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
@@ -55,7 +55,7 @@ function App() {
     try {
       // const response = await fetch('http://localhost:8000/download-csv');
       const response = await fetch(
-        "https://toc-app-be.onrender.com/download-csv"
+        "https://toc-app-product.onrender.com/download-csv"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
