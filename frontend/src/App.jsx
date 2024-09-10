@@ -5,6 +5,7 @@ import TypeSelect from "./components/TypeSelect";
 import ResultCartoon from "./components/ResultCartoon";
 import FilterAlphabet from "./components/FilterAlphabet";
 import PaginationContent from "./components/PaginationContent";
+import Skeleton from "./components/Skeleton";
 
 function App() {
   const [res, setRes] = useState("");
@@ -17,8 +18,8 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await fetch("http://localhost:8000/");
-        const response = await fetch("https://toc-app-be.onrender.com");
+        const response = await fetch("http://localhost:8000/");
+        // const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -35,10 +36,10 @@ function App() {
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
         } else {
-          const response = await fetch(
-            "https://toc-app-be.onrender.com/scrape"
-          );
-          // const response = await fetch("http://localhost:8000/scrape");
+          // const response = await fetch(
+          //   "https://toc-app-be.onrender.com/scrape"
+          // );
+          const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -60,10 +61,10 @@ function App() {
 
   const downloadCSV = async () => {
     try {
-      // const response = await fetch('http://localhost:8000/download-csv');
-      const response = await fetch(
-        "https://toc-app-be.onrender.com/download-csv"
-      );
+      const response = await fetch('http://localhost:8000/download-csv');
+      // const response = await fetch(
+      //   "https://toc-app-be.onrender.com/download-csv"
+      // );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -84,32 +85,32 @@ function App() {
     <ContextCartoon.Provider
       value={{ cartoons, showCartoons, setShowCartoons }}
     >
-      <section className="text-center">
+      <section className="py-24 mx-auto  text-center">
         {error ? (
           <>
-            <p className="text-3xl font-bold text-red-500 my-6">
+            <p className="text-3xl font-bold text-red-600 my-6">
               Backend not responding...
             </p>
-            <p>Run backend ด้วยงับ</p>
+            <p>"Backend was not response 😭"</p>
           </>
         ) : res ? (
           <>
-          <div>
+            <div>
 
-            <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">
-              {res.message}
-            </h1>
-            <button
-              disabled={!(cartoons && cartoons.length >= 1)}
-              onClick={downloadCSV}
-              className={`my-6 rounded-full px-3 ${!(cartoons && cartoons.length >= 1) ? "bg-slate-500" : "bg-green-600 hover:bg-green-500"} `}
+              <h1 className="text-3xl font-bold text-blue-700   tailwind-icon">
+                {res.message}
+              </h1>
+              <button
+                disabled={!(cartoons && cartoons.length >= 1)}
+                onClick={downloadCSV}
+                className={`text-gray-50 my-6 rounded-full py-2 px-6 ${!(cartoons && cartoons.length >= 1) ? " bg-gray-600" : "bg-green-600 hover:bg-green-500"} `}
               >
-              Export CSV
-            </button>
-              </div>
+                Export CSV
+              </button>
+            </div>
             {/* cartoon display  */}
             {cartoons && cartoons.length >= 1 ? (
-              <section className="container max-w-5xl my-12 mx-auto">
+              <section className="container max-w-5xl my-6 mx-auto">
                 <div className="flex gap-4 card">
                   <section className="flex flex-col gap-2">
                     <Search />
@@ -124,22 +125,25 @@ function App() {
               </section>
             ) : (
               <>
-                <div className="mt-24">
-                  <div className="loader center mx-auto my-5 text-yellow-300"></div>
-                  <p className="text-lg font-medium">กำลัง Scraping</p>
-                  <p className="text-slate-400">ใช้เวลา ประมาณ 3-5 นาที</p>
+                <div className="">
+                  <p className="text-lg text-blue-700 font-medium">กำลัง Scraping</p>
+                  <p className="text-gray-900">ใช้เวลา ประมาณ 3-5 นาที</p>
                 </div>
+                <Skeleton />
+
               </>
             )}
           </>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">
+            <h1 className="text-3xl font-bold text-blue-700 my-6 tailwind-icon">
               Loading...
             </h1>
             <p>Please wait, the backend is starting itself automatically.</p>
+            <Skeleton />
           </>
         )}
+
       </section>
     </ContextCartoon.Provider>
   );
