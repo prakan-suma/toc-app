@@ -18,8 +18,8 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/");
-        // const response = await fetch("https://toc-app-be.onrender.com");
+        // const response = await fetch("http://localhost:8000/");
+        const response = await fetch("https://toc-app-be.onrender.com");
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -36,10 +36,10 @@ function App() {
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
         } else {
-          // const response = await fetch(
-          //   "https://toc-app-be.onrender.com/scrape"
-          // );
-          const response = await fetch("http://localhost:8000/scrape");
+          const response = await fetch(
+            "https://toc-app-be.onrender.com/scrape"
+          );
+          // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -61,10 +61,10 @@ function App() {
 
   const downloadCSV = async () => {
     try {
-      const response = await fetch('http://localhost:8000/download-csv');
-      // const response = await fetch(
-      //   "https://toc-app-be.onrender.com/download-csv"
-      // );
+      // const response = await fetch('http://localhost:8000/download-csv');
+      const response = await fetch(
+        "https://toc-app-be.onrender.com/download-csv"
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
