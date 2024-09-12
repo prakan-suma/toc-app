@@ -173,4 +173,4 @@ async def download_csv():
 @app.get("/")
 def read_root():
     logger.info("Root endpoint called")
-    return {"message": "Hello TOC Project"}
+    return {"message": "Hi, Welcome to my Cartoons list"}
