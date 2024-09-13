@@ -4,6 +4,7 @@ import ResultCartoon from "./components/ResultCartoon";
 import FilterAlphabet from "./components/FilterAlphabet";
 import PaginationContent from "./components/PaginationContent";
 import { createContext, useEffect, useState } from "react";
+import Skeleton from "./components/Skeleton";
 
 export const ContextCartoon = createContext();
 
@@ -12,13 +13,18 @@ function App() {
   const [cartoons, setCartoons] = useState([]);
   const [showCartoons, setShowCartoons] = useState([]);
   const [error, setError] = useState(false);
+  const [scrapeStatus, setScrapeStatus] = useState(false);
 
   const CACHE_TIME = 1000 * 60 * 60; // 1 ชั่วโมง
+
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("https://toc-app-be.onrender.com");
+        // const response = await fetch("http://localhost:8000");
+
         const result = await response.json();
         setRes(result);
       } catch (error) {
@@ -36,6 +42,7 @@ function App() {
           setCartoons(JSON.parse(cachedData));
         } else {
           const response = await fetch("https://toc-app-be.onrender.com/scrape");
+          // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -43,7 +50,8 @@ function App() {
           setCartoons(result);
           setShowCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
-          localStorage.setItem("cartoonsTimestamp", Date.now()); // เก็บเวลาปัจจุบัน
+          localStorage.setItem("cartoonsTimestamp", Date.now());
+          console.log(setScrapeStatus(true));
         }
       } catch (error) {
         console.log(error);
@@ -64,6 +72,7 @@ function App() {
 
   const downloadCSV = async () => {
     try {
+      // const response = await fetch("http://localhost:8000/download-csv");
       const response = await fetch("https://toc-app-be.onrender.com/download-csv");
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -86,10 +95,10 @@ function App() {
     <ContextCartoon.Provider
       value={{ cartoons, showCartoons, setShowCartoons }}
     >
-      <section className="text-center ">
+      <section className="text-center">
         {error ? (
           <>
-            <p className="text-3xl font-bold text-red-500 my-6">
+            <p className="text-3xl font-bold text-red-600 my-6">
               Backend not responding...
             </p>
             <p>Run backend ด้วยงับ</p>
@@ -97,17 +106,16 @@ function App() {
         ) : res ? (
           <>
             <div>
-              <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">
+              <h1 className="text-3xl font-bold text-blue-700 my-6 tailwind-icon">
                 {res.message}
               </h1>
               <button
                 disabled={!(cartoons && cartoons.length >= 1)}
                 onClick={downloadCSV}
-                className={`my-6 rounded-full px-3 ${
-                  !(cartoons && cartoons.length >= 1)
-                    ? "bg-slate-500"
-                    : "bg-green-600 hover:bg-green-500"
-                } `}
+                className={`my-6 rounded-full text-white px-6 py-2 ${!(cartoons && cartoons.length >= 1)
+                  ? "bg-slate-500"
+                  : "bg-green-600 hover:bg-green-500"
+                  } `}
               >
                 Export CSV
               </button>
@@ -129,20 +137,23 @@ function App() {
               </section>
             ) : (
               <>
-                <div className="mt-24">
+                <div className="">
                   <div className="loader center mx-auto my-5 text-yellow-300"></div>
                   <p className="text-lg font-medium">กำลัง Scraping</p>
                   <p className="text-slate-400">ใช้เวลา ประมาณ 3-5 นาที</p>
                 </div>
+                <Skeleton />
               </>
             )}
           </>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-cyan-400 my-6 tailwind-icon">
+            <h1 className="text-3xl font-bold text-blue-500 my-6 tailwind-icon">
               Loading...
             </h1>
             <p>Please wait, the backend is starting itself automatically.</p>
+
+            <Skeleton />
           </>
         )}
       </section>
