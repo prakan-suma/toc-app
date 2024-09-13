@@ -1,7 +1,7 @@
 function Skeleton() {
     return (
         <div className="container  mx-auto mt-20">
-            <div className="animate-pulse h-full justify-center ">
+            <div className="animate-pulses h-full justify-center ">
                 <div className="flex gap-4">
                     <div className="w-1/2 flex flex-col gap-4">
                         <div className="w-full h-10 rounded-full bg-slate-300"></div>
