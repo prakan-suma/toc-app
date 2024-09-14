@@ -51,7 +51,8 @@ function App() {
           setShowCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
           localStorage.setItem("cartoonsTimestamp", Date.now());
-          console.log(setScrapeStatus(true));
+          setScrapeStatus(true);
+          console.log(scrapeStarus);
         }
       } catch (error) {
         console.log(error);
