@@ -179,7 +179,7 @@ function App() {
                   } `}>
                   <FaGithub className="text-2xl mr-2" />
                   <a
-                    href="https://github.com/prakan-suma/toc-app/blob/main/frontend/src/components/PaginationContent.jsx"
+                    href="https://github.com/prakan-suma/toc-app"
                   >
                     Source Code
                   </a>
