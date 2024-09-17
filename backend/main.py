@@ -91,7 +91,7 @@ class Scraping:
             genre_class = self.soup.find_all(class_=re.compile("section"))
             genre_url = self.extract_with_regex(
                 self.genre_url_pattern, genre_class)
-            genre_url_filter = self.filter_data(genre_url, 0, 26)
+            genre_url_filter = self.filter_data(genre_url, 0, 30)
 
             logger.info(f"Found {len(genre_url_filter)} genres to scrape")
 
@@ -99,6 +99,7 @@ class Scraping:
 
             count = 1
             manga_list = []
+            seen_names = set()
 
             for deep_detail, soup in zip(genre_url_filter, results):
                 if soup:
@@ -121,15 +122,17 @@ class Scraping:
                                     self.detail_pattern, html_container)
                                 if details:
                                     x, y, z = details[0]
-                                    manga_list.append({
-                                        'id': count,
-                                        'name': x,
-                                        'image_url': y,
-                                        'rate': z,
-                                        'category': deep_detail['name']
-                                    })
-                                    logger.info(f"Added manga: {x}")
-                                    count += 1
+                                    if x not in seen_names:
+                                        manga_list.append({
+                                            'id': count,
+                                            'name': x,
+                                            'image_url': y,
+                                            'rate': z,
+                                            'category': deep_detail['name']
+                                        })
+                                        logger.info(f"Added manga: {x}")
+                                        count += 1
+                                        seen_names.add(x)
 
             if not manga_list:
                 logger.warning("No data found after filtering")
@@ -139,7 +142,6 @@ class Scraping:
                         len(manga_list)})
 
             scraped_manga_list = manga_list
-
             return manga_list
 
 

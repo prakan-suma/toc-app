@@ -6,27 +6,27 @@ import PaginationContent from "./components/PaginationContent";
 import { createContext, useEffect, useState } from "react";
 import Skeleton from "./components/Skeleton";
 
+import { CiExport } from "react-icons/ci";
+import { FaGithub } from "react-icons/fa";
 export const ContextCartoon = createContext();
 
 function App() {
   const [res, setRes] = useState("");
   const [cartoons, setCartoons] = useState([]);
   const [showCartoons, setShowCartoons] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState(false);
-  const [scrapeStatus, setScrapeStatus] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState("");
   const CACHE_TIME = 1000 * 60 * 60; // 1 ชั่วโมง
-
-
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("https://toc-app-be.onrender.com");
-        // const response = await fetch("http://localhost:8000");
-
         const result = await response.json();
         setRes(result);
+        setIsLoading(false);
       } catch (error) {
         setError(true);
         console.log(error);
@@ -40,9 +40,10 @@ function App() {
 
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
+          setShowCartoons(JSON.parse(cachedData));
+          setIsLoading(false);  // 
         } else {
           const response = await fetch("https://toc-app-be.onrender.com/scrape");
-          // const response = await fetch("http://localhost:8000/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -51,11 +52,16 @@ function App() {
           setShowCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
           localStorage.setItem("cartoonsTimestamp", Date.now());
+<<<<<<< HEAD
+          setIsLoading(false);
+=======
           setScrapeStatus(true);
           console.log(scrapeStarus);
+>>>>>>>
         }
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       }
     };
 
@@ -63,7 +69,7 @@ function App() {
     fetchCartoons();
   }, []);
 
-  // ฟังก์ชันกรองข้อมูลตามคำค้นหา
+
   const handleSearch = (searchTerm) => {
     const filteredCartoons = cartoons.filter((cartoon) =>
       cartoon.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -71,30 +77,56 @@ function App() {
     setShowCartoons(filteredCartoons);
   };
 
+  const handleTypeChange = (newType) => {
+    setSelectedType(newType);
+    setCurrentPage(0);
+  };
   const downloadCSV = async () => {
     try {
-      // const response = await fetch("http://localhost:8000/download-csv");
-      const response = await fetch("https://toc-app-be.onrender.com/download-csv");
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      const cachedData = localStorage.getItem("cartoons");
+
+      if (cachedData) {
+        // Use cached data
+        const data = JSON.parse(cachedData);
+        const csvContent = "data:text/csv;charset=utf-8,"
+          + data.map(item => item.name).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "manga_list.csv");
+        document.body.appendChild(link);
+        link.click();
+      } else {
+        // Fetch from backend
+        const response = await fetch("https://toc-app-be.onrender.com/download-csv");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = "manga_list.csv";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
       }
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = "manga_list.csv"; // The name of the file when it's downloaded
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Failed to download CSV:", error);
     }
   };
 
+
+  useEffect(() => {
+
+    setCurrentPage(0);
+  }, [selectedType]);
+
   return (
     <ContextCartoon.Provider
-      value={{ cartoons, showCartoons, setShowCartoons }}
+      value={{ cartoons, showCartoons, setShowCartoons, currentPage, setCurrentPage, handleTypeChange }}
     >
       <section className="text-center">
         {error ? (
@@ -104,22 +136,48 @@ function App() {
             </p>
             <p>Run backend ด้วยงับ</p>
           </>
-        ) : res ? (
+        ) : isLoading ? (
           <>
-            <div>
+            <h1 className="text-3xl font-bold text-blue-500 my-6 tailwind-icon">
+              Loading...
+            </h1>
+            <p>Please wait, the backend is starting itself automatically.</p>
+            <Skeleton />
+          </>
+        ) : res && cartoons.length > 200 ? (
+          <>
+            <div className="">
               <h1 className="text-3xl font-bold text-blue-700 my-6 tailwind-icon">
-                {res.message}
+                😘{res.message}😍
               </h1>
-              <button
-                disabled={!(cartoons && cartoons.length >= 1)}
-                onClick={downloadCSV}
-                className={`my-6 rounded-full text-white px-6 py-2 ${!(cartoons && cartoons.length >= 1)
+
+              <div className="flex justify-center gap-4">
+                <div className={`flex items-center w-fit  rounded-lg text-white px-3 py-2 ${!(cartoons && cartoons.length >= 1)
                   ? "bg-slate-500"
                   : "bg-green-600 hover:bg-green-500"
-                  } `}
-              >
-                Export CSV
-              </button>
+                  } `}>
+                  <CiExport className="text-2xl mr-2" />
+                  <button
+                    disabled={!(cartoons && cartoons.length >= 1)}
+                    onClick={downloadCSV}
+                  >
+
+                    Export CSV
+                  </button>
+                </div>
+
+                <div className={`flex items-center w-fit  rounded-lg text-white px-3 py-2 ${!(cartoons && cartoons.length >= 1)
+                  ? "bg-slate-500"
+                  : "bg-gray-800 hover:bg-gray-700"
+                  } `}>
+                  <FaGithub className="text-2xl mr-2" />
+                  <a
+                    href="https://github.com/prakan-suma/toc-app/blob/main/frontend/src/components/PaginationContent.jsx"
+                  >
+                    Source Code
+                  </a>
+                </div>
+              </div>
             </div>
             {/* cartoon display */}
             {cartoons && cartoons.length >= 1 ? (
@@ -127,7 +185,7 @@ function App() {
                 <div className="flex gap-4 card">
                   <section className="flex flex-col gap-2">
                     <Search onSearch={handleSearch} />
-                    <TypeSelect />
+                    <TypeSelect onTypeChange={handleTypeChange} /> {/* Pass handler to TypeSelect */}
                     <ResultCartoon />
                   </section>
                   <section>
@@ -140,7 +198,7 @@ function App() {
               <>
                 <div className="">
                   <div className="loader center mx-auto my-5 text-yellow-300"></div>
-                  <p className="text-lg font-medium">กำลัง Scraping</p>
+                  <p className="text-lg font-medium">กำลัง Scraping.☺️</p>
                   <p className="text-slate-400">ใช้เวลา ประมาณ 3-5 นาที</p>
                 </div>
                 <Skeleton />
@@ -161,5 +219,4 @@ function App() {
     </ContextCartoon.Provider>
   );
 }
-
 export default App;

@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
 function Search({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const handleInputChange = (event) => {
     const value = event.target.value;
     setSearchTerm(value);
-    onSearch(value); 
+    onSearch(value);
   };
 
   return (
