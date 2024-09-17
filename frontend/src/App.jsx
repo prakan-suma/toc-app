@@ -8,6 +8,7 @@ import Skeleton from "./components/Skeleton";
 
 import { CiExport } from "react-icons/ci";
 import { FaGithub } from "react-icons/fa";
+
 export const ContextCartoon = createContext();
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState("");
-  const CACHE_TIME = 1000 * 60 * 60; // 1 ชั่วโมง
+  const [isScraping, setIsScraping] = useState(false); // Add state for scraping status
+  const CACHE_TIME = 1000 * 60 * 60; // 1 hour
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +31,7 @@ function App() {
         setIsLoading(false);
       } catch (error) {
         setError(true);
+        setIsLoading(false);
         console.log(error);
       }
     };
@@ -41,8 +44,9 @@ function App() {
         if (cachedData && cachedTime && Date.now() - cachedTime < CACHE_TIME) {
           setCartoons(JSON.parse(cachedData));
           setShowCartoons(JSON.parse(cachedData));
-          setIsLoading(false);  // 
+          setIsLoading(false);
         } else {
+          setIsScraping(true); // Set scraping status to true
           const response = await fetch("https://toc-app-be.onrender.com/scrape");
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -52,18 +56,19 @@ function App() {
           setShowCartoons(result);
           localStorage.setItem("cartoons", JSON.stringify(result));
           localStorage.setItem("cartoonsTimestamp", Date.now());
+          setIsScraping(false); // Set scraping status to false
           setIsLoading(false);
         }
       } catch (error) {
-        console.log(error);
+        setIsScraping(false); // Ensure scraping status is reset
         setIsLoading(false);
+        console.log(error);
       }
     };
 
     fetchData();
     fetchCartoons();
   }, []);
-
 
   const handleSearch = (searchTerm) => {
     const filteredCartoons = cartoons.filter((cartoon) =>
@@ -76,6 +81,7 @@ function App() {
     setSelectedType(newType);
     setCurrentPage(0);
   };
+
   const downloadCSV = async () => {
     try {
       const cachedData = localStorage.getItem("cartoons");
@@ -113,9 +119,7 @@ function App() {
     }
   };
 
-
   useEffect(() => {
-
     setCurrentPage(0);
   }, [selectedType]);
 
@@ -139,7 +143,16 @@ function App() {
             <p>Please wait, the backend is starting itself automatically.</p>
             <Skeleton />
           </>
-        ) : res && cartoons.length > 200 ? (
+        ) : isScraping ? ( // Show scraping status
+          <>
+            <div className="">
+              <div className="loader center mx-auto my-5 text-yellow-300"></div>
+              <p className="text-lg font-medium">กำลัง Scraping.☺️</p>
+              <p className="text-slate-400">ใช้เวลา ประมาณ 3-5 นาที</p>
+            </div>
+            <Skeleton />
+          </>
+        ) : cartoons.length > 0 ? (
           <>
             <div className="">
               <h1 className="text-3xl font-bold text-blue-700 my-6 tailwind-icon">
@@ -156,7 +169,6 @@ function App() {
                     disabled={!(cartoons && cartoons.length >= 1)}
                     onClick={downloadCSV}
                   >
-
                     Export CSV
                   </button>
                 </div>
@@ -175,7 +187,7 @@ function App() {
               </div>
             </div>
             {/* cartoon display */}
-            {cartoons && cartoons.length >= 1 ? (
+            {cartoons.length > 0 ? (
               <section className="container max-w-5xl my-12 mx-auto">
                 <div className="flex gap-4 card">
                   <section className="flex flex-col gap-2">
@@ -214,4 +226,5 @@ function App() {
     </ContextCartoon.Provider>
   );
 }
+
 export default App;
